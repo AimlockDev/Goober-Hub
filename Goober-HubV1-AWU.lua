@@ -2,18 +2,13 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
-
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
-
--- Vars for ESP
 local espEnabled = false
 local espObjects = {}
 local highlightConnections = {}
-
--- Spinbot variables and functions
 local spinbotEnabled = false
 local spinConnection
-local spinSpeed = math.rad(10) -- adjust for spin speed
+local spinSpeed = math.rad(10)
 
 local function startSpin()
     if spinConnection then spinConnection:Disconnect() end
@@ -88,7 +83,6 @@ local function removeAllESP()
     espObjects = {}
 end
 
--- Player events
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function()
         if espEnabled then
@@ -101,7 +95,6 @@ Players.PlayerRemoving:Connect(function(player)
     removeESP(player)
 end)
 
--- Create main window
 local Window = Rayfield:CreateWindow({
     Name = "Goober Hub",
     LoadingTitle = "Goober Hub",
@@ -111,7 +104,6 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab('Main')
 
--- ESP toggle
 local espToggle = Tab:CreateToggle({
     Name = "Enable Rainbow ESP",
     CurrentValue = false,
@@ -126,7 +118,6 @@ local espToggle = Tab:CreateToggle({
     end,
 })
 
--- Movement sliders
 local walkSpeedSlider = Tab:CreateSlider({
     Name = "WalkSpeed",
     Range = {1, 150},
@@ -153,7 +144,6 @@ local jumpPowerSlider = Tab:CreateSlider({
     end,
 })
 
--- Infinite Jump toggle
 local infiniteJumpEnabled = false
 local infiniteJumpToggle = Tab:CreateToggle({
     Name = "Infinite Jump",
@@ -164,7 +154,6 @@ local infiniteJumpToggle = Tab:CreateToggle({
     end,
 })
 
--- Connect UserInputService to enable infinite jump
 UserInputService.JumpRequest:Connect(function()
     if infiniteJumpEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
         local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -172,7 +161,6 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
--- Spinbot toggle
 local spinbotToggle = Tab:CreateToggle({
     Name = "Spinbot",
     CurrentValue = false,
@@ -186,7 +174,6 @@ local spinbotToggle = Tab:CreateToggle({
     end,
 })
 
--- Buttons for scripts
 local loadInfiniteYieldButton = Tab:CreateButton({
     Name = "Load Infinite Yield",
     Callback = function()
@@ -208,13 +195,11 @@ local loadAirhubButton = Tab:CreateButton({
     end,
 })
 
--- Load default values
 if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
     LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16
     LocalPlayer.Character:FindFirstChildOfClass("Humanoid").JumpPower = 50
 end
 
--- Initial notification
 Rayfield:Notify({
     Title = "Goober Hub",
     Content = "Welcome to Goober Hub!",
