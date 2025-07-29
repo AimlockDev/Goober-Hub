@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
+
 local espEnabled = false
 local espObjects = {}
 local highlightConnections = {}
@@ -36,32 +37,40 @@ local function rainbowColor()
 end
 
 local function createESP(player)
-    if espObjects[player] then return end
-    local highlight = Instance.new("Highlight")
-    highlight.FillColor = Color3.new(1, 1, 1)
-    highlight.OutlineColor = rainbowColor()
-    highlight.OutlineTransparency = 0
-    highlight.Parent = player.Character or workspace
-    espObjects[player] = highlight
-
-    player.CharacterAdded:Connect(function(character)
-        highlight.Parent = character
-    end)
-
-    local conn = RunService.RenderStepped:Connect(function()
-        if espEnabled and highlight.Parent then
-            highlight.OutlineColor = rainbowColor()
+    if espObjects[player] then
+        if espObjects[player].Parent then
+            espObjects[player]:Destroy()
         end
+        espObjects[player] = nil
+    end
+    local function setupHighlight(character)
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.new(1, 1, 1)
+        highlight.OutlineColor = rainbowColor()
+        highlight.OutlineTransparency = 0
+        highlight.Parent = character
+        espObjects[player] = highlight
+        local conn = RunService.RenderStepped:Connect(function()
+            if espEnabled and highlight.Parent then
+                highlight.OutlineColor = rainbowColor()
+            end
+        end)
+        highlightConnections[highlight] = conn
+    end
+    if player.Character then
+        setupHighlight(player.Character)
+    end
+    local characterAddedConn
+    characterAddedConn = player.CharacterAdded:Connect(function(character)
+        setupHighlight(character)
     end)
-    highlightConnections[highlight] = conn
 end
 
 local function removeESP(player)
     if espObjects[player] then
-        local highlight = espObjects[player]
-        local conn = highlightConnections[highlight]
-        if conn then conn:Disconnect() end
-        highlight:Destroy()
+        if espObjects[player].Parent then
+            espObjects[player]:Destroy()
+        end
         espObjects[player] = nil
     end
 end
@@ -76,8 +85,8 @@ end
 
 local function removeAllESP()
     for highlight, conn in pairs(highlightConnections) do
-        conn:Disconnect()
-        highlight:Destroy()
+        if conn then conn:Disconnect() end
+        if highlight.Parent then highlight:Destroy() end
     end
     highlightConnections = {}
     espObjects = {}
@@ -97,8 +106,8 @@ end)
 
 local Window = Rayfield:CreateWindow({
     Name = "Goober Hub",
-    LoadingTitle = "Goober Hub",
-    LoadingSubtitle = "by -AimlockDev",
+    LoadingTitle = "lets do this!1!1!!",
+    LoadingSubtitle = "by AimlockDev",
     ConfigurationSaving = { Enabled = false }
 })
 
